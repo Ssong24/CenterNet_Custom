@@ -11,13 +11,18 @@ from .dataset.coco import COCO
 from .dataset.pascal import PascalVOC
 from .dataset.kitti import KITTI
 from .dataset.coco_hp import COCOHP
+from .dataset.etri import Etri
+from .dataset.etri_distortion import EtriDistortion
+
 
 
 dataset_factory = {
   'coco': COCO,
   'pascal': PascalVOC,
   'kitti': KITTI,
-  'coco_hp': COCOHP
+  'coco_hp': COCOHP,
+  'etri': Etri,
+  'etri_distort': EtriDistortion
 }
 
 _sample_factory = {
@@ -29,7 +34,8 @@ _sample_factory = {
 
 
 def get_dataset(dataset, task):
+  #print('get_dataset: dataset, task::', dataset, ', ', task)
   class Dataset(dataset_factory[dataset], _sample_factory[task]):
     pass
   return Dataset
-  
+

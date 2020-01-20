@@ -45,7 +45,7 @@ def main(opt):
       Dataset(opt, 'val'), 
       batch_size=1, 
       shuffle=False,
-      num_workers=1,
+      num_workers=0, #1
       pin_memory=True
   )
 
@@ -65,21 +65,46 @@ def main(opt):
 
   print('Starting training...')
   best = 1e10
+
+  # Save loss value per epoch
+  loss_folder = opt.save_dir + "/loss/"
+  if not os.path.exists(loss_folder):
+    os.makedirs(loss_folder)
+
+  log_train_path = opt.save_dir + "/loss/loss_train.txt"
+  log_val_path = opt.save_dir + "/loss/loss_val.txt"
+
+  file_train_loss = open(log_train_path, "w")
+  file_val_loss = open(log_val_path, "w")
+  print('file_train_loss name: ', file_train_loss)
+
+
   for epoch in range(start_epoch + 1, opt.num_epochs + 1):
     mark = epoch if opt.save_all else 'last'
     log_dict_train, _ = trainer.train(epoch, train_loader)
     logger.write('epoch: {} |'.format(epoch))
+    file_train_loss.write('epoch: {} |'.format(epoch))
+
+
     for k, v in log_dict_train.items():
+      #print('What is (k,v)? : ',k, ', ', v) #Here, k: name of loss, v: value
       logger.scalar_summary('train_{}'.format(k), v, epoch)
       logger.write('{} {:8f} | '.format(k, v))
+      file_train_loss.write('{} {:8f} | '.format(k, v))
+    file_train_loss.write('\n')
+
+
     if opt.val_intervals > 0 and epoch % opt.val_intervals == 0:
       save_model(os.path.join(opt.save_dir, 'model_{}.pth'.format(mark)), 
                  epoch, model, optimizer)
       with torch.no_grad():
         log_dict_val, preds = trainer.val(epoch, val_loader)
+
+      file_val_loss.write('epoch: {} |'.format(epoch))
       for k, v in log_dict_val.items():
         logger.scalar_summary('val_{}'.format(k), v, epoch)
         logger.write('{} {:8f} | '.format(k, v))
+        file_val_loss.write('{} {:8f} | '.format(k, v))
       if log_dict_val[opt.metric] < best:
         best = log_dict_val[opt.metric]
         save_model(os.path.join(opt.save_dir, 'model_best.pth'), 
@@ -88,15 +113,21 @@ def main(opt):
       save_model(os.path.join(opt.save_dir, 'model_last.pth'), 
                  epoch, model, optimizer)
     logger.write('\n')
-    if epoch in opt.lr_step:
+
+    if epoch % 5 == 0:
+      file_val_loss.write('\n')
+    if epoch in opt.lr_step :#or epoch % 10 == 0:
       save_model(os.path.join(opt.save_dir, 'model_{}.pth'.format(epoch)), 
                  epoch, model, optimizer)
       lr = opt.lr * (0.1 ** (opt.lr_step.index(epoch) + 1))
       print('Drop LR to', lr)
       for param_group in optimizer.param_groups:
           param_group['lr'] = lr
+
+  file_train_loss.close()
+  file_val_loss.close()
   logger.close()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
   opt = opts().parse()
   main(opt)

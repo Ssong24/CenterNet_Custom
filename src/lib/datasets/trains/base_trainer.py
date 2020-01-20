@@ -58,12 +58,11 @@ class BaseTrainer(object):
     num_iters = len(data_loader) if opt.num_iters < 0 else opt.num_iters
     bar = Bar('{}/{}'.format(opt.task, opt.exp_id), max=num_iters)
     end = time.time()
-    #print('\n\nlength of dataloader: ', len(data_loader))
     for iter_id, batch in enumerate(data_loader):
-      #print('iter_id ', iter_id)
-      #print('batch: ', batch)
+      print('iter_id ', iter_id)
+      print('batch: ', batch)
+
       if iter_id >= num_iters:
-        #print('iter_id >= num_iters confirmed')
         break
       data_time.update(time.time() - end)
 
@@ -92,7 +91,7 @@ class BaseTrainer(object):
         print() # Insert new line in front of image_path line
       if opt.print_iter > 0:
         if iter_id % opt.print_iter == 0:
-          print('{}/{}| {}'.format(opt.task, opt.exp_id, Bar.suffix)) 
+          print('{}/{}| {}'.format(opt.task, opt.exp_id, Bar.suffix))
       else:
         bar.next()
       

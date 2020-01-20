@@ -26,7 +26,7 @@ def demo(opt):
     detector.pause = False
     while True:
         _, img = cam.read()
-        cv2.imshow('input', img)
+        #cv2.imshow('input', img)
         ret = detector.run(img)
         time_str = ''
         for stat in time_stats:
@@ -51,6 +51,7 @@ def demo(opt):
       for stat in time_stats:
         time_str = time_str + '{} {:.3f}s |'.format(stat, ret[stat])
       print(time_str)
+
 if __name__ == '__main__':
   opt = opts().init()
   demo(opt)

@@ -25,6 +25,7 @@ def create_model(arch, heads, head_conv):
   num_layers = int(arch[arch.find('_') + 1:]) if '_' in arch else 0
   arch = arch[:arch.find('_')] if '_' in arch else arch
   get_model = _model_factory[arch]
+
   model = get_model(num_layers=num_layers, heads=heads, head_conv=head_conv)
   return model
 
@@ -55,6 +56,8 @@ def load_model(model, model_path, optimizer=None, resume=False,
         print('Skip loading parameter {}, required shape{}, '\
               'loaded shape{}. {}'.format(
           k, model_state_dict[k].shape, state_dict[k].shape, msg))
+        #model_state_dic[k].shape: pretrained shapetorch.Size [80,64,1,1]  (80: num_classes)
+        #sate_dict[k].shape: custom-trained shapetorch.Size [5,64,1,1]   (5:num_classes)
         state_dict[k] = model_state_dict[k]
     else:
       print('Drop parameter {}.'.format(k) + msg)

@@ -11,7 +11,7 @@ import os
 import torch.utils.data as data
 
 class PascalVOC(data.Dataset):
-  num_classes = 20
+  num_classes = 5 #20
   default_resolution = [384, 384]
   mean = np.array([0.485, 0.456, 0.406],
                    dtype=np.float32).reshape(1, 1, 3)
@@ -22,16 +22,21 @@ class PascalVOC(data.Dataset):
     super(PascalVOC, self).__init__()
     self.data_dir = os.path.join(opt.data_dir, 'voc')
     self.img_dir = os.path.join(self.data_dir, 'images')
-    _ann_name = {'train': 'trainval0712', 'val': 'test2007'}
+    _ann_name = {'train': 'trainval2019', 'val': 'test2019'}
     self.annot_path = os.path.join(
-      self.data_dir, 'annotations', 
-      'pascal_{}.json').format(_ann_name[split])
+        self.data_dir, 'annotations',
+        'ETRI_pascal_{}.json').format(_ann_name[split])
+    # _ann_name = {'train': 'trainval0712', 'val': 'test2007'}
+    # self.annot_path = os.path.join(
+    #   self.data_dir, 'annotations',
+    #   'pascal_{}.json').format(_ann_name[split])
     self.max_objs = 50
-    self.class_name = ['__background__', "aeroplane", "bicycle", "bird", "boat",
-     "bottle", "bus", "car", "cat", "chair", "cow", "diningtable", "dog", 
-     "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", 
-     "train", "tvmonitor"]
-    self._valid_ids = np.arange(1, 21, dtype=np.int32)
+    self.class_name = ['__background__', "person", "car_1", "car_2", "head", "body" ]
+    # ['__background__', "aeroplane", "bicycle", "bird", "boat",
+    #  "bottle", "bus", "car", "cat", "chair", "cow", "diningtable", "dog",
+    #  "horse", "motorbike", "person", "pottedplant", "sheep", "sofa",
+    #  "train", "tvmonitor"]
+    self._valid_ids = np.arange(1, 6, dtype=np.int32)#(1, 21, dtype=np.int32)
     self.cat_ids = {v: i for i, v in enumerate(self._valid_ids)}
     self._data_rng = np.random.RandomState(123)
     self._eig_val = np.array([0.2141788, 0.01817699, 0.00341571],

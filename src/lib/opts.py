@@ -12,8 +12,8 @@ class opts(object):
     # basic experiment setting
     self.parser.add_argument('task', default='ctdet',
                              help='ctdet | ddd | multi_pose | exdet')
-    self.parser.add_argument('--dataset', default='coco',
-                             help='coco | kitti | coco_hp | pascal')
+    self.parser.add_argument('--dataset', default='etri_distort',
+                             help='etri_distort | etri | coco | kitti | coco_hp | pascal')
     self.parser.add_argument('--exp_id', default='default')
     self.parser.add_argument('--test', action='store_true')
     self.parser.add_argument('--debug', type=int, default=0,
@@ -82,7 +82,7 @@ class opts(object):
     # train
     self.parser.add_argument('--lr', type=float, default=1.25e-4, 
                              help='learning rate for batch size 32.')
-    self.parser.add_argument('--lr_step', type=str, default='90,120',
+    self.parser.add_argument('--lr_step', type=str, default='10, 20, 30, 40,50, 60, 70, 80, 90,100, 110, 120, 130, 140',
                              help='drop learning rate by 10.')
     self.parser.add_argument('--num_epochs', type=int, default=140,
                              help='total training epochs.')
@@ -99,6 +99,12 @@ class opts(object):
                                   'test on test set')
 
     # test
+    # Songeun's code
+    self.parser.add_argument('--out_path', default = '../data/etri/test_dataset/detection-results/',
+                             help='folder path of prediction results')
+    self.parser.add_argument('--img_dir', default = 'Image/images_640x480_undistort',
+                             help='folder path of test image ')
+    ##################
     self.parser.add_argument('--flip_test', action='store_true',
                              help='flip data augmentation.')
     self.parser.add_argument('--test_scales', type=str, default='1',
@@ -335,9 +341,9 @@ class opts(object):
 
   def init(self, args=''):
     default_dataset_info = {
-      'ctdet': {'default_resolution': [512, 512], 'num_classes': 80, 
-                'mean': [0.408, 0.447, 0.470], 'std': [0.289, 0.274, 0.278],
-                'dataset': 'coco'},
+      'ctdet': {'default_resolution': [640, 480], 'num_classes': 5,
+                'mean': [ 0.33790419,  0.33613848,  0.33732091], 'std': [ 0.26406858,  0.26162528,  0.2699688 ],#'mean': [0.18199874, 0.1793125,  0.18213241], 'std': [0.2463923,  0.24445952, 0.25209397],
+                'dataset': 'etri'},
       'exdet': {'default_resolution': [512, 512], 'num_classes': 80, 
                 'mean': [0.408, 0.447, 0.470], 'std': [0.289, 0.274, 0.278],
                 'dataset': 'coco'},

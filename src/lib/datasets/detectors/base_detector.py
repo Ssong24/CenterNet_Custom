@@ -84,7 +84,6 @@ class BaseDetector(object):
     merge_time, tot_time = 0, 0
     debugger = Debugger(dataset=self.opt.dataset, ipynb=(self.opt.debug==3),
                         theme=self.opt.debugger_theme)
-    #debugger.py -> add_2d_detection(or add_ct_detection), add_coco_box
     start_time = time.time()
     pre_processed = False
     if isinstance(image_or_path_or_tensor, np.ndarray):
