@@ -109,3 +109,6 @@ ENV/
 
 # mypy
 .mypy_cache/
+/exp/ctdet/etri-done/
+/exp/ctdet/
+/exp/ctdet/etri_distort/
