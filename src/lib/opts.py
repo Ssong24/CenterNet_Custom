@@ -288,6 +288,7 @@ class opts(object):
     return opt
 
   def update_dataset_info_and_set_heads(self, opt, dataset):
+
     input_h, input_w = dataset.default_resolution
     opt.mean, opt.std = dataset.mean, dataset.std
     opt.num_classes = dataset.num_classes
@@ -336,11 +337,15 @@ class opts(object):
         opt.heads.update({'hp_offset': 2})
     else:
       assert 0, 'task not defined!'
-    print('heads', opt.heads)
+    # print('heads', opt.heads) if num_classes = 5, heads: {'hm':5, 'wh':2, 'reg':2}
     return opt
 
   def init(self, args=''):
     default_dataset_info = {
+      # 'ctdet': {'default_resolution': [512, 512], 'num_classes': 80,
+      #             'mean': [0.408, 0.447, 0.470], 'std': [0.289, 0.274, 0.278],
+      #             'dataset': 'coco'},
+
       'ctdet': {'default_resolution': [640, 480], 'num_classes': 5,
                 'mean': [ 0.33790419,  0.33613848,  0.33732091], 'std': [ 0.26406858,  0.26162528,  0.2699688 ],#'mean': [0.18199874, 0.1793125,  0.18213241], 'std': [0.2463923,  0.24445952, 0.25209397],
                 'dataset': 'etri'},

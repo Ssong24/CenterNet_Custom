@@ -17,7 +17,8 @@ from opts import opts
 from logger import Logger
 from utils.utils import AverageMeter
 from datasets.dataset_factory import dataset_factory
-from detectors.detector_factory import detector_factory
+#from detectors.detector_factory import detector_factory
+from detectors.ctdet import CtdetDetector
 
 class PrefetchDataset(torch.utils.data.Dataset):
   def __init__(self, opt, dataset, pre_process_func):
@@ -51,7 +52,7 @@ def prefetch_test(opt):
   opt = opts().update_dataset_info_and_set_heads(opt, Dataset)
   print(opt)
   Logger(opt)
-  Detector = detector_factory[opt.task]
+  Detector = CtdetDetector #detector_factory[opt.task]
   
   split = 'val' if not opt.trainval else 'test'
   dataset = Dataset(opt, split)
@@ -87,7 +88,7 @@ def test(opt):
   opt = opts().update_dataset_info_and_set_heads(opt, Dataset)
   print(opt)
   Logger(opt)
-  Detector = detector_factory[opt.task]
+  Detector = CtdetDetector #detector_factory[opt.task]
   
   split = 'val' if not opt.trainval else 'test'
   dataset = Dataset(opt, split)
@@ -103,10 +104,10 @@ def test(opt):
     img_info = dataset.coco.loadImgs(ids=[img_id])[0]
     img_path = os.path.join(dataset.img_dir, img_info['file_name'])
 
-    if opt.task == 'ddd':
-      ret = detector.run(img_path, img_info['calib'])
-    else:
-      ret = detector.run(img_path)
+    # if opt.task == 'ddd':
+    #   ret = detector.run(img_path, img_info['calib'])
+    # else:
+    ret = detector.run(img_path)
     
     results[img_id] = ret['results']
 
@@ -117,8 +118,7 @@ def test(opt):
       Bar.suffix = Bar.suffix + '|{} {:.3f} '.format(t, avg_time_stats[t].avg)
     bar.next()
   bar.finish()
-  print('opt.save_dir: ', opt.save_dir)
-  print('results:', results)
+
   dataset.run_eval(results, opt.save_dir)
 
 if __name__ == '__main__':

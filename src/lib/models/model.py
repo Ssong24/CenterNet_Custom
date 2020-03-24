@@ -2,29 +2,16 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import torchvision.models as models
 import torch
-import torch.nn as nn
-import os
 
-from .networks.msra_resnet import get_pose_net
-from .networks.dlav0 import get_pose_net as get_dlav0
-from .networks.pose_dla_dcn import get_pose_net as get_dla_dcn
+
 from .networks.resnet_dcn import get_pose_net as get_pose_net_dcn
-from .networks.large_hourglass import get_large_hourglass_net
 
-_model_factory = {
-  'res': get_pose_net, # default Resnet with deconv
-  'dlav0': get_dlav0, # default DLAup
-  'dla': get_dla_dcn,
-  'resdcn': get_pose_net_dcn,
-  'hourglass': get_large_hourglass_net,
-}
 
 def create_model(arch, heads, head_conv):
   num_layers = int(arch[arch.find('_') + 1:]) if '_' in arch else 0
   arch = arch[:arch.find('_')] if '_' in arch else arch
-  get_model = _model_factory[arch]
+  get_model = get_pose_net_dcn
 
   model = get_model(num_layers=num_layers, heads=heads, head_conv=head_conv)
   return model
@@ -46,9 +33,8 @@ def load_model(model, model_path, optimizer=None, resume=False,
   model_state_dict = model.state_dict()
 
   # check loaded parameters and created model parameters
-  msg = 'If you see this, your model does not fully load the ' + \
-        'pre-trained weight. Please make sure ' + \
-        'you have correctly specified --arch xxx ' + \
+  msg = 'If you see this, your model does not fully load the pre-trained weight. ' + \
+        ' Please make sure you have correctly specified --arch xxx ' + \
         'or set the correct --num_classes for your own dataset.'
   for k in state_dict:
     if k in model_state_dict:
@@ -56,8 +42,7 @@ def load_model(model, model_path, optimizer=None, resume=False,
         print('Skip loading parameter {}, required shape{}, '\
               'loaded shape{}. {}'.format(
           k, model_state_dict[k].shape, state_dict[k].shape, msg))
-        #model_state_dic[k].shape: pretrained shapetorch.Size [80,64,1,1]  (80: num_classes)
-        #sate_dict[k].shape: custom-trained shapetorch.Size [5,64,1,1]   (5:num_classes)
+
         state_dict[k] = model_state_dict[k]
     else:
       print('Drop parameter {}.'.format(k) + msg)

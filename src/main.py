@@ -13,13 +13,14 @@ from models.model import create_model, load_model, save_model
 from models.data_parallel import DataParallel
 from logger import Logger
 from datasets.dataset_factory import get_dataset
-from trains.train_factory import train_factory
+#from trains.train_factory import train_factory
+from trains.ctdet import CtdetTrainer
 
 
 def main(opt):
   torch.manual_seed(opt.seed)
   torch.backends.cudnn.benchmark = not opt.not_cuda_benchmark and not opt.test
-  Dataset = get_dataset(opt.dataset, opt.task)
+  Dataset = get_dataset(opt.dataset, 'ctdet')#opt.task)
   opt = opts().update_dataset_info_and_set_heads(opt, Dataset)
   print(opt)
 
@@ -36,7 +37,7 @@ def main(opt):
     model, optimizer, start_epoch = load_model(
       model, opt.load_model, optimizer, opt.resume, opt.lr, opt.lr_step)
 
-  Trainer = train_factory[opt.task]
+  Trainer = CtdetTrainer
   trainer = Trainer(opt, model, optimizer)
   trainer.set_device(opt.gpus, opt.chunk_sizes, opt.device)
 
@@ -71,8 +72,8 @@ def main(opt):
   if not os.path.exists(loss_folder):
     os.makedirs(loss_folder)
 
-  log_train_path = opt.save_dir + "/loss/loss_train.txt"
-  log_val_path = opt.save_dir + "/loss/loss_val.txt"
+  log_train_path = loss_folder + "loss_train.txt"
+  log_val_path = loss_folder + "loss_val.txt"
 
   file_train_loss = open(log_train_path, "w")
   file_val_loss = open(log_val_path, "w")
@@ -87,7 +88,6 @@ def main(opt):
 
 
     for k, v in log_dict_train.items():
-      #print('What is (k,v)? : ',k, ', ', v) #Here, k: name of loss, v: value
       logger.scalar_summary('train_{}'.format(k), v, epoch)
       logger.write('{} {:8f} | '.format(k, v))
       file_train_loss.write('{} {:8f} | '.format(k, v))
@@ -116,7 +116,7 @@ def main(opt):
 
     if epoch % 5 == 0:
       file_val_loss.write('\n')
-    if epoch in opt.lr_step :#or epoch % 10 == 0:
+    if epoch in opt.lr_step :
       save_model(os.path.join(opt.save_dir, 'model_{}.pth'.format(epoch)), 
                  epoch, model, optimizer)
       lr = opt.lr * (0.1 ** (opt.lr_step.index(epoch) + 1))
