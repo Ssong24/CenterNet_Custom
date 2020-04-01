@@ -15,6 +15,7 @@ from utils.debugger import Debugger
 
 class BaseDetector(object):
   def __init__(self, opt):
+    # Set device as CUDA
     if opt.gpus[0] >= 0:
       opt.device = torch.device('cuda')
     else:
@@ -82,12 +83,14 @@ class BaseDetector(object):
   def run(self, image_or_path_or_tensor, meta=None):
     load_time, pre_time, net_time, dec_time, post_time = 0, 0, 0, 0, 0
     merge_time, tot_time = 0, 0
+
     debugger = Debugger(dataset=self.opt.dataset, ipynb=(self.opt.debug==3),
                         theme=self.opt.debugger_theme)
     #debugger.py -> add_2d_detection(or add_ct_detection), add_coco_box
     start_time = time.time()
     pre_processed = False
     if isinstance(image_or_path_or_tensor, np.ndarray):
+      print('image is np.ndarray')
       image = image_or_path_or_tensor
     elif type(image_or_path_or_tensor) == type (''): 
       image = cv2.imread(image_or_path_or_tensor)
@@ -103,7 +106,7 @@ class BaseDetector(object):
     for scale in self.scales:
       scale_start_time = time.time()
       if not pre_processed:
-        images, meta = self.pre_process(image, scale, meta)
+        images, meta = self.pre_process(image, scale, meta) #?
       else:
         # import pdb; pdb.set_trace()
         images = pre_processed_images['images'][scale][0]

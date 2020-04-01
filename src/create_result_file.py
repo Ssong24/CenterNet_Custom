@@ -8,7 +8,6 @@ import os
 import json
 import cv2
 import numpy as np
-import time
 from progress.bar import Bar
 import torch
 
@@ -29,9 +28,6 @@ CLASS_MAPPING = {
     3: 'Head',
     4: 'Body'
 }
-
-
-
 
 class PrefetchDataset(torch.utils.data.Dataset):
     def __init__(self, opt, dataset, pre_process_func):
@@ -66,8 +62,6 @@ class PrefetchDataset(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.images)
 
-
-
 def _to_float(x):
     return float("{:.2f}".format(x))
 
@@ -89,7 +83,6 @@ def prefetch_test(opt):
     data_loader = torch.utils.data.DataLoader(
         dataset_song,
         batch_size=1, shuffle=False, num_workers=0, pin_memory=True)  # num_workers=1, pin_memory=True)
-
 
     results = {}
     num_iters = len(dataset)
@@ -127,7 +120,6 @@ def prefetch_test(opt):
         for cls_ind in results[image_id]:
             category_id = valid_ids[cls_ind - 1]
 
-
             for bbox in results[image_id][cls_ind]:
                 if bbox[4] < 0.18: # threshold for confidence
                     continue
@@ -136,7 +128,6 @@ def prefetch_test(opt):
                 score = bbox[4]
                 #bbox_out = list(map(_to_float, bbox[0:4]))
                 class_id = int(category_id) - 1
-
 
                 str_score = str(score)
                 xmin = str(bbox[0])
@@ -153,7 +144,6 @@ def prefetch_test(opt):
     #     #centerNet의 precision, recall 계산에 따름.
     #     print('img name: {}  category_id: {}  class name: {}  bbox: {}  score: {:2f} '.
     #         format(dataset_song.get_image_name(song_ind), int(category_id), CLASS_MAPPING.get(class_id), bbox_out, score))
-
 
 if __name__ == '__main__':
     opt = opts().parse()

@@ -10,7 +10,7 @@ class Debugger(object):
   def __init__(self, ipynb=False, theme='black', 
                num_classes=-1, dataset=None, down_ratio=4):
     self.ipynb = ipynb
-    if not self.ipynb:
+    if self.ipynb:
       import matplotlib.pyplot as plt
       self.plt = plt
     self.imgs = {}
@@ -48,23 +48,23 @@ class Debugger(object):
       self.names = coco_class_name
     elif num_classes == 20 or dataset == 'pascal':
       self.names = pascal_class_name
-    elif dataset == 'gta':
-      self.names = gta_class_name
-      self.focal_length = 935.3074360871937
-      self.W = 1920
-      self.H = 1080
-      self.dim_scale = 3
-    elif dataset == 'viper':
-      self.names = gta_class_name
-      self.focal_length = 1158
-      self.W = 1920
-      self.H = 1080
-      self.dim_scale = 3
-    elif num_classes == 3 or dataset == 'kitti':
-      self.names = kitti_class_name
-      self.focal_length = 721.5377
-      self.W = 1242
-      self.H = 375
+    # elif dataset == 'gta':
+    #   self.names = gta_class_name
+    #   self.focal_length = 935.3074360871937
+    #   self.W = 1920
+    #   self.H = 1080
+    #   self.dim_scale = 3
+    # elif dataset == 'viper':
+    #   self.names = gta_class_name
+    #   self.focal_length = 1158
+    #   self.W = 1920
+    #   self.H = 1080
+    #   self.dim_scale = 3
+    # elif num_classes == 3 or dataset == 'kitti':
+    #   self.names = kitti_class_name
+    #   self.focal_length = 721.5377
+    #   self.W = 1242
+    #   self.H = 375
     num_classes = len(self.names)
     self.down_ratio=down_ratio
     # for bird view
@@ -120,6 +120,7 @@ class Debugger(object):
   def gen_colormap(self, img, output_res=None):
     img = img.copy()
     c, h, w = img.shape[0], img.shape[1], img.shape[2]
+    # print('h,w: ', h,', ', w) # 160, 120
     if output_res is None:
       output_res = (h * self.down_ratio, w * self.down_ratio)
     img = img.transpose(1, 2, 0).reshape(h, w, c, 1).astype(np.float32)
@@ -150,6 +151,7 @@ class Debugger(object):
   '''
   def gen_colormap_hp(self, img, output_res=None):
     c, h, w = img.shape[0], img.shape[1], img.shape[2]
+
     if output_res is None:
       output_res = (h * self.down_ratio, w * self.down_ratio)
     img = img.transpose(1, 2, 0).reshape(h, w, c, 1).astype(np.float32)
@@ -225,7 +227,8 @@ class Debugger(object):
     else:
       self.ax = None
       nImgs = len(self.imgs)
-      fig=self.plt.figure(figsize=(nImgs * 10,10))
+      fig= self.plt.figure(figsize=(nImgs * 10,10))
+      # print('nCols: ', nImgs) #3
       nCols = nImgs
       nRows = nImgs // nCols
       for i, (k, v) in enumerate(self.imgs.items()):
@@ -430,15 +433,6 @@ class Debugger(object):
                       lineType=cv2.LINE_AA)
     self.imgs[img_id] = bird_view
 
-
-kitti_class_name = [
-  'p', 'v', 'b'
-]
-
-gta_class_name = [
-  'p', 'v'
-]
-
 pascal_class_name = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", 
   "car", "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike", 
   "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
@@ -458,6 +452,14 @@ coco_class_name = [
      'oven', 'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase',
      'scissors', 'teddy bear', 'hair drier', 'toothbrush'
 ]
+
+# kitti_class_name = [
+#   'p', 'v', 'b'
+# ]
+#
+# gta_class_name = [
+#   'p', 'v'
+# ]
 
 etri_class_name = ['Person', 'Car_1', 'Car_2', 'Head', 'Body']
 

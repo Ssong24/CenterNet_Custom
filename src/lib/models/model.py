@@ -10,7 +10,7 @@ from .networks.resnet_dcn import get_pose_net as get_pose_net_dcn
 
 def create_model(arch, heads, head_conv):
   num_layers = int(arch[arch.find('_') + 1:]) if '_' in arch else 0
-  arch = arch[:arch.find('_')] if '_' in arch else arch
+  # arch = arch[:arch.find('_')] if '_' in arch else arch
   get_model = get_pose_net_dcn
 
   model = get_model(num_layers=num_layers, heads=heads, head_conv=head_conv)

@@ -11,13 +11,13 @@ from detectors.detector_factory import detector_factory
 # file format
 image_ext = ['jpg', 'jpeg', 'png', 'webp']
 video_ext = ['mp4', 'mov', 'avi', 'mkv']
-time_stats = ['total', 'load', 'pre', 'net', 'dec', 'post', 'merge']
+time_stats = ['tot', 'load', 'pre', 'net', 'dec', 'post', 'merge']
 
 def demo(opt):
   os.environ['CUDA_VISIBLE_DEVICES'] = opt.gpus_str # = 0
   opt.debug = max(opt.debug, 1)
 
-  Detector = detector_factory[opt.task] #opt.task='ctdet'
+  Detector = detector_factory[opt.task] # = CtNetDetector / opt.task='ctdet'
   detector = Detector(opt)
 
   # Demo video file
