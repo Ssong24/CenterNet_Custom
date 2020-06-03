@@ -47,7 +47,7 @@ class Logger(object):
         os.mkdir(log_dir)
     self.log = open(log_dir + '/log.txt', 'w')
     try:
-      os.system('cp {}/opt.txt {}/'.format(opt.save_dir, log_dir))
+      os.system('copy {}/opt.txt {}/'.format(opt.save_dir, log_dir))
     except:
       pass
     self.start_line = True

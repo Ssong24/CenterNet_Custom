@@ -10,10 +10,8 @@ from .networks.resnet_dcn import get_pose_net as get_pose_net_dcn
 
 def create_model(arch, heads, head_conv):
   num_layers = int(arch[arch.find('_') + 1:]) if '_' in arch else 0
-  # arch = arch[:arch.find('_')] if '_' in arch else arch
-  get_model = get_pose_net_dcn
+  model = get_pose_net_dcn(num_layers=num_layers, heads=heads, head_conv=head_conv)
 
-  model = get_model(num_layers=num_layers, heads=heads, head_conv=head_conv)
   return model
 
 def load_model(model, model_path, optimizer=None, resume=False, 
@@ -25,17 +23,19 @@ def load_model(model, model_path, optimizer=None, resume=False,
   state_dict = {}
   
   # convert data_parallal to model
+
   for k in state_dict_:
     if k.startswith('module') and not k.startswith('module_list'):
       state_dict[k[7:]] = state_dict_[k]
     else:
       state_dict[k] = state_dict_[k]
   model_state_dict = model.state_dict()
-
   # check loaded parameters and created model parameters
   msg = 'If you see this, your model does not fully load the pre-trained weight. ' + \
         ' Please make sure you have correctly specified --arch xxx ' + \
         'or set the correct --num_classes for your own dataset.'
+
+  # Check if required shape and loaded shape is same size
   for k in state_dict:
     if k in model_state_dict:
       if state_dict[k].shape != model_state_dict[k].shape:
@@ -46,10 +46,12 @@ def load_model(model, model_path, optimizer=None, resume=False,
         state_dict[k] = model_state_dict[k]
     else:
       print('Drop parameter {}.'.format(k) + msg)
+
   for k in model_state_dict:
     if not (k in state_dict):
       print('No param {}.'.format(k) + msg)
       state_dict[k] = model_state_dict[k]
+
   model.load_state_dict(state_dict, strict=False)
 
   # resume optimizer parameters
@@ -66,6 +68,7 @@ def load_model(model, model_path, optimizer=None, resume=False,
       print('Resumed optimizer with start lr', start_lr)
     else:
       print('No optimizer parameters in checkpoint.')
+
   if optimizer is not None:
     return model, optimizer, start_epoch
   else:

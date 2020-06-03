@@ -86,13 +86,12 @@ class BaseDetector(object):
 
     debugger = Debugger(dataset=self.opt.dataset, ipynb=(self.opt.debug==3),
                         theme=self.opt.debugger_theme)
-    #debugger.py -> add_2d_detection(or add_ct_detection), add_coco_box
     start_time = time.time()
     pre_processed = False
     if isinstance(image_or_path_or_tensor, np.ndarray):
       print('image is np.ndarray')
       image = image_or_path_or_tensor
-    elif type(image_or_path_or_tensor) == type (''): 
+    elif type(image_or_path_or_tensor) == type (''):  # path
       image = cv2.imread(image_or_path_or_tensor)
     else:
       image = image_or_path_or_tensor['image'][0].numpy()

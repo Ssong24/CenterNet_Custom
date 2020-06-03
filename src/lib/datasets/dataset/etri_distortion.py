@@ -13,10 +13,10 @@ import torch.utils.data as data
 
 class EtriDistortion(data.Dataset):
     num_classes = 5
-    default_resolution = [640, 480]
-    mean = np.array([ 0.33790419,  0.33613848,  0.33732091],
+    default_resolution = [480,640]
+    mean = np.array([0.33790419,  0.33613848,  0.33732091],
                     dtype=np.float32).reshape((1, 1, 3))
-    std = np.array([ 0.26406858,  0.26162528,  0.2699688 ],
+    std = np.array([0.26406858,  0.26162528,  0.2699688],
                    dtype=np.float32).reshape((1, 1, 3))
 
     def __init__(self, opt, split):
@@ -41,8 +41,8 @@ class EtriDistortion(data.Dataset):
             '__background__', 'Person', 'Car_1', 'Car_2', 'Head', 'Body']
         self._valid_ids = [1, 2, 3, 4, 5]
         self.cat_ids = {v: i for i, v in enumerate(self._valid_ids)}
-        self.voc_color = [(v // 32 * 64 + 64, (v // 8) % 4 * 64, v % 8 * 32) \
-                          for v in range(1, self.num_classes + 1)]
+        self.voc_color = [ (v // 32 * 64 + 64, (v // 8) % 4 * 64, v % 8 * 32) \
+                          for v in range(1, self.num_classes + 1)] # bbox color? [(64, 0, 32), (64, 0, 64), (64, 0, 96), (64, 0, 128), (64, 0, 160)]
         self._data_rng = np.random.RandomState(123)
         self._eig_val = np.array([0.2141788, 0.01817699, 0.00341571],
                                  dtype=np.float32)
@@ -51,18 +51,16 @@ class EtriDistortion(data.Dataset):
             [-0.5832747, 0.00994535, -0.81221408],
             [-0.56089297, 0.71832671, 0.41158938]
         ], dtype=np.float32)
-        # self.mean = np.array([0.485, 0.456, 0.406], np.float32).reshape(1, 1, 3)
-        # self.std = np.array([0.229, 0.224, 0.225], np.float32).reshape(1, 1, 3)
 
         self.split = split
         self.opt = opt
 
-        print('==> initializing etri {} data.'.format(split))
+        print('==> initializing etri distortion {} data.'.format(split))
         self.coco = coco.COCO(self.annot_path)
         self.images = self.coco.getImgIds()
         self.num_samples = len(self.images)
 
-        print('Loaded {} {} samples'.format(split, self.num_samples))
+        print('Loaded {} {} samples'.format(split, self.num_samples), '\n')
 
     @staticmethod
     def _to_float(x):
@@ -139,6 +137,5 @@ class EtriDistortion(data.Dataset):
                         extreme_points = list(map(self._to_float, bbox[5:13]))
                         detection["extreme_points"] = extreme_points
                     detections.append(detection)
-
 
         return detections

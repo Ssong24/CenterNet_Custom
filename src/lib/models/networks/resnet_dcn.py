@@ -22,11 +22,7 @@ BN_MOMENTUM = 0.1
 logger = logging.getLogger(__name__)
 
 model_urls = {
-    'resnet18': 'https://download.pytorch.org/models/resnet18-5c106cde.pth',
-    'resnet34': 'https://download.pytorch.org/models/resnet34-333f7ec4.pth' #,
-    # 'resnet50': 'https://download.pytorch.org/models/resnet50-19c8e357.pth',
-    # 'resnet101': 'https://download.pytorch.org/models/resnet101-5d3b4d8f.pth',
-    # 'resnet152': 'https://download.pytorch.org/models/resnet152-b121ed2d.pth',
+    'resnet18': 'https://download.pytorch.org/models/resnet18-5c106cde.pth'
 }
 
 def conv3x3(in_planes, out_planes, stride=1):
@@ -65,47 +61,6 @@ class BasicBlock(nn.Module):
         out = self.relu(out)
 
         return out
-
-
-# class Bottleneck(nn.Module):
-#     expansion = 4
-#
-#     def __init__(self, inplanes, planes, stride=1, downsample=None):
-#         super(Bottleneck, self).__init__()
-#         self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=1, bias=False)
-#         self.bn1 = nn.BatchNorm2d(planes, momentum=BN_MOMENTUM)
-#         self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, stride=stride,
-#                                padding=1, bias=False)
-#         self.bn2 = nn.BatchNorm2d(planes, momentum=BN_MOMENTUM)
-#         self.conv3 = nn.Conv2d(planes, planes * self.expansion, kernel_size=1,
-#                                bias=False)
-#         self.bn3 = nn.BatchNorm2d(planes * self.expansion,
-#                                   momentum=BN_MOMENTUM)
-#         self.relu = nn.ReLU(inplace=True)
-#         self.downsample = downsample
-#         self.stride = stride
-#
-#     def forward(self, x):
-#         residual = x
-#
-#         out = self.conv1(x)
-#         out = self.bn1(out)
-#         out = self.relu(out)
-#
-#         out = self.conv2(out)
-#         out = self.bn2(out)
-#         out = self.relu(out)
-#
-#         out = self.conv3(out)
-#         out = self.bn3(out)
-#
-#         if self.downsample is not None:
-#             residual = self.downsample(x)
-#
-#         out += residual
-#         out = self.relu(out)
-#
-#         return out
 
 def fill_up_weights(up):
     w = up.weight.data
@@ -221,10 +176,6 @@ class PoseResNet(nn.Module):
             fc = DCN(self.inplanes, planes, 
                     kernel_size=(3,3), stride=1,
                     padding=1, dilation=1, deformable_groups=1)
-            # fc = nn.Conv2d(self.inplanes, planes,
-            #         kernel_size=3, stride=1, 
-            #         padding=1, dilation=1, bias=False)
-            # fill_fc_weights(fc)
             up = nn.ConvTranspose2d(
                     in_channels=planes,
                     out_channels=planes,
@@ -263,32 +214,25 @@ class PoseResNet(nn.Module):
         return [ret]
 
     def init_weights(self, num_layers):
-        if 1:
-            url = model_urls['resnet{}'.format(num_layers)]
-            pretrained_state_dict = model_zoo.load_url(url)
-            print('=> loading pretrained model {}'.format(url))
-            self.load_state_dict(pretrained_state_dict, strict=False) #strict=False: to ignore non-matching keys
-            print('=> init deconv weights from normal distribution')
-            for name, m in self.deconv_layers.named_modules():
-                # name: num of layers, m: components of each layer
-                print(m)
-                if isinstance(m, nn.BatchNorm2d):
-                    nn.init.constant_(m.weight, 1)
-                    nn.init.constant_(m.bias, 0)
+        url = model_urls['resnet{}'.format(num_layers)]
+        pretrained_state_dict = model_zoo.load_url(url)
+        print('=> loading pretrained model {}'.format(url))
+        self.load_state_dict(pretrained_state_dict, strict=False) #strict=False: to ignore non-matching keys
+        print('=> init deconv weights from normal distribution')
+        for name, m in self.deconv_layers.named_modules():
+            # name: num of layers, m: components of each layer
+            # print('name: ', name, 'm: ', m)
+            if isinstance(m, nn.BatchNorm2d):
+                nn.init.constant_(m.weight, 1)
+                nn.init.constant_(m.bias, 0)
 
 
-resnet_spec = {18: (BasicBlock, [2, 2, 2, 2]),
-               34: (BasicBlock, [3, 4, 6, 3])#,
-               # 50: (Bottleneck, [3, 4, 6, 3]),
-               # 101: (Bottleneck, [3, 4, 23, 3]),
-               # 152: (Bottleneck, [3, 8, 36, 3])
-               }
+resnet_spec = {18: (BasicBlock, [2, 2, 2, 2]) }
 
 
 def get_pose_net(num_layers, heads, head_conv=256):
   block_class, layers = resnet_spec[num_layers]
-
-
   model = PoseResNet(block_class, layers, heads, head_conv=head_conv)
   model.init_weights(num_layers)
+
   return model

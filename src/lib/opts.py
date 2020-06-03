@@ -104,6 +104,11 @@ class opts(object):
                              help='folder path of prediction results')
     self.parser.add_argument('--img_dir', default = 'Image/images_640x480_undistort',
                              help='folder path of test image ')
+    self.parser.add_argument('--tag_format', type=str, default='yolo',
+                             help='format of dataset annotations')
+    self.parser.add_argument('--save_conf', action='store_true', help='confidence saved in result lines of detector')
+    self.parser.add_argument('--split', type=str, default='train',
+                             help='train/val/test dataset for labelling ')
     ##################
     self.parser.add_argument('--flip_test', action='store_true',
                              help='flip data augmentation.')
@@ -168,18 +173,18 @@ class opts(object):
     self.parser.add_argument('--wh_weight', type=float, default=0.1,
                              help='loss weight for bounding box size.')
     # multi_pose
-    self.parser.add_argument('--hp_weight', type=float, default=1,
-                             help='loss weight for human pose offset.')
-    self.parser.add_argument('--hm_hp_weight', type=float, default=1,
-                             help='loss weight for human keypoint heatmap.')
-    # ddd
-    self.parser.add_argument('--dep_weight', type=float, default=1,
-                             help='loss weight for depth.')
-    self.parser.add_argument('--dim_weight', type=float, default=1,
-                             help='loss weight for 3d bounding box size.')
-    self.parser.add_argument('--rot_weight', type=float, default=1,
-                             help='loss weight for orientation.')
-    self.parser.add_argument('--peak_thresh', type=float, default=0.2)
+    # self.parser.add_argument('--hp_weight', type=float, default=1,
+    #                          help='loss weight for human pose offset.')
+    # self.parser.add_argument('--hm_hp_weight', type=float, default=1,
+    #                          help='loss weight for human keypoint heatmap.')
+    # # ddd
+    # self.parser.add_argument('--dep_weight', type=float, default=1,
+    #                          help='loss weight for depth.')
+    # self.parser.add_argument('--dim_weight', type=float, default=1,
+    #                          help='loss weight for 3d bounding box size.')
+    # self.parser.add_argument('--rot_weight', type=float, default=1,
+    #                          help='loss weight for orientation.')
+    # self.parser.add_argument('--peak_thresh', type=float, default=0.2)
     
     # task
     # ctdet
@@ -276,10 +281,11 @@ class opts(object):
 
     opt.root_dir = os.path.join(os.path.dirname(__file__), '..', '..')
     opt.data_dir = os.path.join(opt.root_dir, 'data')
+    print('opt.data_dir: ', opt.data_dir)
     opt.exp_dir = os.path.join(opt.root_dir, 'exp', opt.task)
     opt.save_dir = os.path.join(opt.exp_dir, opt.exp_id)
     opt.debug_dir = os.path.join(opt.save_dir, 'debug')
-    print('The output will be saved to ', opt.save_dir)
+    print('The output will be saved to ', opt.save_dir, '\n\n')
     
     if opt.resume and opt.load_model == '':
       model_path = opt.save_dir[:-4] if opt.save_dir.endswith('TEST') \
@@ -301,40 +307,14 @@ class opts(object):
     opt.output_w = opt.input_w // opt.down_ratio
     opt.input_res = max(opt.input_h, opt.input_w)
     opt.output_res = max(opt.output_h, opt.output_w)
-    
-    # if opt.task == 'exdet':
-    #   # assert opt.dataset in ['coco']
-    #   num_hm = 1 if opt.agnostic_ex else opt.num_classes
-    #   opt.heads = {'hm_t': num_hm, 'hm_l': num_hm,
-    #                'hm_b': num_hm, 'hm_r': num_hm,
-    #                'hm_c': opt.num_classes}
-    #   if opt.reg_offset:
-    #     opt.heads.update({'reg_t': 2, 'reg_l': 2, 'reg_b': 2, 'reg_r': 2})
-    # elif opt.task == 'ddd':
-    #   # assert opt.dataset in ['gta', 'kitti', 'viper']
-    #   opt.heads = {'hm': opt.num_classes, 'dep': 1, 'rot': 8, 'dim': 3}
-    #   if opt.reg_bbox:
-    #     opt.heads.update(
-    #       {'wh': 2})
-    #   if opt.reg_offset:
-    #     opt.heads.update({'reg': 2})
-    # if opt.task == 'ctdet':
+
     if opt.task == 'ctdet':
       # assert opt.dataset in ['pascal', 'coco']
       opt.heads = {'hm': opt.num_classes,
                    'wh': 2 if not opt.cat_spec_wh else 2 * opt.num_classes}
       if opt.reg_offset:
         opt.heads.update({'reg': 2})
-    # elif opt.task == 'multi_pose':
-    #   # assert opt.dataset in ['coco_hp']
-    #   opt.flip_idx = dataset.flip_idx
-    #   opt.heads = {'hm': opt.num_classes, 'wh': 2, 'hps': 34}
-    #   if opt.reg_offset:
-    #     opt.heads.update({'reg': 2})
-    #   if opt.hm_hp:
-    #     opt.heads.update({'hm_hp': 17})
-    #   if opt.reg_hp_offset:
-    #     opt.heads.update({'hp_offset': 2})
+
     else:
       assert 0, 'task not defined!'
     # print('heads', opt.heads) if num_classes = 5, heads: {'hm':5, 'wh':2, 'reg':2}
@@ -342,7 +322,7 @@ class opts(object):
 
   def init(self, args=''):
     default_dataset_info = {
-      'ctdet': {'default_resolution': [640, 480], 'num_classes': 5,
+      'ctdet': {'default_resolution': [480,640], 'num_classes': 5,
                 'mean': [ 0.3379,  0.3361,  0.3373], 'std': [ 0.2641,  0.2616,  0.27 ],#'mean': [0.18199874, 0.1793125,  0.18213241], 'std': [0.2463923,  0.24445952, 0.25209397],
                 'dataset': 'etri'}#,
       # 'ctdet': {'default_resolution': [512, 512], 'num_classes': 80,
