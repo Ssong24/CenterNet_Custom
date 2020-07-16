@@ -21,8 +21,13 @@ class Etri(data.Dataset):
 
     def __init__(self, opt, split):
         super(Etri, self).__init__()
-        self.data_dir = os.path.join(opt.data_dir, 'etri')
-        self.img_dir = os.path.join(self.data_dir, opt.img_dir) #'Image/images_640x480_distort')   #images')
+
+        self.data_dir = os.path.join(opt.data_dir, 'distort')
+
+        self.img_dir = os.path.join(self.data_dir, opt.img_dir, '640x480')
+        print("etri.py -- opt.data_dir: ", opt.data_dir)
+        print("self.data_dir: ", self.data_dir)
+        print('self.img_dir: ', self.img_dir)
         if split == 'val':
             self.annot_path = os.path.join(
                 self.data_dir, 'annotations', 'val_etri.json')
@@ -36,6 +41,7 @@ class Etri(data.Dataset):
             else:
                 self.annot_path = os.path.join(
                     self.data_dir, 'annotations', 'train_etri.json')
+        print('self.annot_path: ', self.annot_path)
         self.max_objs = 128
         self.class_name = [
             '__background__', 'Person', 'Car_1', 'Car_2', 'Head', 'Body']

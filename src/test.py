@@ -50,7 +50,7 @@ def prefetch_test(opt):
 
   Dataset = dataset_factory[opt.dataset]
   opt = opts().update_dataset_info_and_set_heads(opt, Dataset)
-  print(opt)
+  # print(opt)
   Logger(opt)
   Detector = CtdetDetector #detector_factory[opt.task]
   
@@ -78,7 +78,7 @@ def prefetch_test(opt):
         t, tm = avg_time_stats[t])
     bar.next()
   bar.finish()
-  print('opt.save_dir: ', opt.save_dir)
+  # print('opt.save_dir: ', opt.save_dir)
   dataset.run_eval(results, opt.save_dir)
 
 def test(opt):
@@ -86,7 +86,7 @@ def test(opt):
 
   Dataset = dataset_factory[opt.dataset]
   opt = opts().update_dataset_info_and_set_heads(opt, Dataset)
-  print(opt)
+  #print(opt)
   Logger(opt)
   Detector = CtdetDetector #detector_factory[opt.task]
   

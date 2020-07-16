@@ -13,16 +13,19 @@ from models.model import create_model, load_model, save_model
 from models.data_parallel import DataParallel
 from logger import Logger
 from datasets.dataset_factory import get_dataset
-#from trains.train_factory import train_factory
 from trains.ctdet import CtdetTrainer
+# from trains.train_factory import train_factory
+
+
+
 
 
 def main(opt):
   torch.manual_seed(opt.seed)
   torch.backends.cudnn.benchmark = not opt.not_cuda_benchmark and not opt.test
-  Dataset = get_dataset(opt.dataset, 'ctdet')#opt.task)
+  Dataset = get_dataset(opt.dataset, opt.task)  # ctdet
   opt = opts().update_dataset_info_and_set_heads(opt, Dataset)
-  print(opt)
+  #print(opt)
 
   logger = Logger(opt)
 
@@ -77,7 +80,6 @@ def main(opt):
 
   file_train_loss = open(log_train_path, "w")
   file_val_loss = open(log_val_path, "w")
-  print('file_train_loss name: ', file_train_loss)
 
 
   for epoch in range(start_epoch + 1, opt.num_epochs + 1):

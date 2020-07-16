@@ -100,9 +100,9 @@ class opts(object):
 
     # test
     # Songeun's code
-    self.parser.add_argument('--out_path', default = '../data/etri/test_dataset/detection-results/',
+    self.parser.add_argument('--out_path', default = '../data/default/test_dataset/detection-results/',
                              help='folder path of prediction results')
-    self.parser.add_argument('--img_dir', default = 'Image/images_640x480_undistort',
+    self.parser.add_argument('--img_dir', default = 'images',
                              help='folder path of test image ')
     self.parser.add_argument('--tag_format', type=str, default='yolo',
                              help='format of dataset annotations')
@@ -128,6 +128,8 @@ class opts(object):
                                   ' during validation.')
 
     # dataset
+    self.parser.add_argument('--data_dir', type=str, default='etri-safety_system',
+                              help='Dataset folder name')
     self.parser.add_argument('--not_rand_crop', action='store_true',
                              help='not use the random crop data augmentation'
                                   'from CornerNet.')
@@ -172,19 +174,6 @@ class opts(object):
                              help='loss weight for keypoint local offsets.')
     self.parser.add_argument('--wh_weight', type=float, default=0.1,
                              help='loss weight for bounding box size.')
-    # multi_pose
-    # self.parser.add_argument('--hp_weight', type=float, default=1,
-    #                          help='loss weight for human pose offset.')
-    # self.parser.add_argument('--hm_hp_weight', type=float, default=1,
-    #                          help='loss weight for human keypoint heatmap.')
-    # # ddd
-    # self.parser.add_argument('--dep_weight', type=float, default=1,
-    #                          help='loss weight for depth.')
-    # self.parser.add_argument('--dim_weight', type=float, default=1,
-    #                          help='loss weight for 3d bounding box size.')
-    # self.parser.add_argument('--rot_weight', type=float, default=1,
-    #                          help='loss weight for orientation.')
-    # self.parser.add_argument('--peak_thresh', type=float, default=0.2)
     
     # task
     # ctdet
@@ -277,11 +266,11 @@ class opts(object):
       if i < rest_batch_size % (len(opt.gpus) - 1):
         slave_chunk_size += 1
       opt.chunk_sizes.append(slave_chunk_size)
-    print('training chunk_sizes:', opt.chunk_sizes)
+    # print('training chunk_sizes:', opt.chunk_sizes) batch size?
 
     opt.root_dir = os.path.join(os.path.dirname(__file__), '..', '..')
-    opt.data_dir = os.path.join(opt.root_dir, 'data')
-    print('opt.data_dir: ', opt.data_dir)
+    print('opts.py -- opt.root_dir: ', opt.root_dir)
+    opt.data_dir = os.path.join(opt.root_dir, '..','DL-DATASET', opt.data_dir)
     opt.exp_dir = os.path.join(opt.root_dir, 'exp', opt.task)
     opt.save_dir = os.path.join(opt.exp_dir, opt.exp_id)
     opt.debug_dir = os.path.join(opt.save_dir, 'debug')
@@ -324,22 +313,7 @@ class opts(object):
     default_dataset_info = {
       'ctdet': {'default_resolution': [480,640], 'num_classes': 5,
                 'mean': [ 0.3379,  0.3361,  0.3373], 'std': [ 0.2641,  0.2616,  0.27 ],#'mean': [0.18199874, 0.1793125,  0.18213241], 'std': [0.2463923,  0.24445952, 0.25209397],
-                'dataset': 'etri'}#,
-      # 'ctdet': {'default_resolution': [512, 512], 'num_classes': 80,
-      #             'mean': [0.408, 0.447, 0.470], 'std': [0.289, 0.274, 0.278],
-      #             'dataset': 'coco'},
-      # 'exdet': {'default_resolution': [512, 512], 'num_classes': 80,
-      #           'mean': [0.408, 0.447, 0.470], 'std': [0.289, 0.274, 0.278],
-      #           'dataset': 'coco'},
-      # 'multi_pose': {
-      #   'default_resolution': [512, 512], 'num_classes': 1,
-      #   'mean': [0.408, 0.447, 0.470], 'std': [0.289, 0.274, 0.278],
-      #   'dataset': 'coco_hp', 'num_joints': 17,
-      #   'flip_idx': [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10],
-      #                [11, 12], [13, 14], [15, 16]]},
-      # 'ddd': {'default_resolution': [384, 1280], 'num_classes': 3,
-      #           'mean': [0.485, 0.456, 0.406], 'std': [0.229, 0.224, 0.225],
-      #           'dataset': 'kitti'},
+                'dataset': 'etri'}
     }
     class Struct:
       def __init__(self, entries):
