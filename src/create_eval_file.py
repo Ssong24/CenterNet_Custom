@@ -75,7 +75,7 @@ def prefetch_test(opt, split='test'):
 
     Detector = detector_factory[opt.task] # opt.task = 'ctdet', Detector = CtNetDetector
 
-    #split = 'test'
+    # split = 'test'
     dataset = Dataset(opt, split)
     detector = Detector(opt)
 

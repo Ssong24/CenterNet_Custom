@@ -14,6 +14,7 @@ class Debugger(object):
       import matplotlib.pyplot as plt
       self.plt = plt
     self.imgs = {}
+    self.pred_img = None
     self.theme = theme
     colors = [(color_list[_]).astype(np.uint8) \
             for _ in range(len(color_list))]
@@ -221,12 +222,15 @@ class Debugger(object):
     if not self.ipynb:
       for i, v in self.imgs.items():
         cv2.imshow('{}'.format(i), v)
+        self.pred_img = v
+
       if cv2.waitKey(0 if pause else 1) == 27:
         import sys
         sys.exit(0)
     else:
       self.ax = None
       nImgs = len(self.imgs)
+
       fig= self.plt.figure(figsize=(nImgs * 10,10))
       # print('nCols: ', nImgs) #3
       nCols = nImgs
@@ -237,6 +241,7 @@ class Debugger(object):
           self.plt.imshow(cv2.cvtColor(v, cv2.COLOR_BGR2RGB))
         else:
           self.plt.imshow(v)
+
       self.plt.show()
 
   def save_img(self, imgId='default', path='./cache/debug/'):

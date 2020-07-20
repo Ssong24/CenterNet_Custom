@@ -34,6 +34,7 @@ class BaseDetector(object):
     self.scales = opt.test_scales
     self.opt = opt
     self.pause = True
+    self.pred_img = None
 
   def pre_process(self, image, scale, meta=None):
     height, width = image.shape[0:2]
@@ -89,7 +90,7 @@ class BaseDetector(object):
     start_time = time.time()
     pre_processed = False
     if isinstance(image_or_path_or_tensor, np.ndarray):
-      print('image is np.ndarray')
+      # print('image is np.ndarray')
       image = image_or_path_or_tensor
     elif type(image_or_path_or_tensor) == type (''):  # path
       image = cv2.imread(image_or_path_or_tensor)
@@ -140,7 +141,7 @@ class BaseDetector(object):
     tot_time += end_time - start_time
     
     if self.opt.debug >= 1:
-      self.show_results(debugger, image, results)
+      self.pred_img = self.show_results(debugger, image, results)
     
     return {'results': results, 'tot': tot_time, 'load': load_time,
             'pre': pre_time, 'net': net_time, 'dec': dec_time,

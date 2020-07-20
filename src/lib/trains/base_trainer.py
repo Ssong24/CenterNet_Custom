@@ -21,11 +21,16 @@ class ModleWithLoss(torch.nn.Module):
     return outputs[-1], loss, loss_stats
 
 class BaseTrainer(object):
-  def __init__(
-    self, opt, model, optimizer=None):
+  def __init__(self, opt, model, optimizer=None):
     self.opt = opt
     self.optimizer = optimizer
     self.loss_stats, self.loss = self._get_losses(opt)
+    #print('BaseTrainer - self.loss: ', self.loss)
+    # BaseTrainer - self.loss: CtdetLoss(
+    #   (crit): FocalLoss()
+    # (crit_reg): RegL1Loss()
+    # (crit_wh): RegL1Loss()
+    # )
     self.model_with_loss = ModleWithLoss(model, self.loss)
 
   def set_device(self, gpus, chunk_sizes, device):
@@ -45,7 +50,7 @@ class BaseTrainer(object):
     model_with_loss = self.model_with_loss
     if phase == 'train':
       model_with_loss.train()
-    else:
+    else: # phase val or test..?
       if len(self.opt.gpus) > 1:
         model_with_loss = self.model_with_loss.module
       model_with_loss.eval()
@@ -58,12 +63,10 @@ class BaseTrainer(object):
     num_iters = len(data_loader) if opt.num_iters < 0 else opt.num_iters
     bar = Bar('{}/{}'.format(opt.task, opt.exp_id), max=num_iters)
     end = time.time()
-    #print('\n\nlength of dataloader: ', len(data_loader))
     for iter_id, batch in enumerate(data_loader):
-      #print('iter_id ', iter_id)
-      #print('batch: ', batch)
+
       if iter_id >= num_iters:
-        #print('iter_id >= num_iters confirmed')
+
         break
       data_time.update(time.time() - end)
 
@@ -73,6 +76,7 @@ class BaseTrainer(object):
       output, loss, loss_stats = model_with_loss(batch)
       loss = loss.mean()
       if phase == 'train':
+
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
@@ -107,7 +111,10 @@ class BaseTrainer(object):
     ret = {k: v.avg for k, v in avg_loss_stats.items()}
     ret['time'] = bar.elapsed_td.total_seconds() / 60.
     return ret, results
-  
+
+  # When user defines base classes, abstract methods should raise this exception
+  # when they require derived classes to override the method.
+
   def debug(self, batch, output, iter_id):
     raise NotImplementedError
 

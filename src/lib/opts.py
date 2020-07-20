@@ -13,7 +13,7 @@ class opts(object):
     self.parser.add_argument('task', default='ctdet',
                              help='ctdet | ddd | multi_pose | exdet')
     self.parser.add_argument('--dataset', default='etri_distort',
-                             help='etri_distort | etri | coco | kitti | coco_hp | pascal')
+                             help='etri_distort | etri_undistort | coco | kitti | coco_hp | pascal')
     self.parser.add_argument('--exp_id', default='default')
     self.parser.add_argument('--test', action='store_true')
     self.parser.add_argument('--debug', type=int, default=0,
@@ -31,7 +31,11 @@ class opts(object):
                              help='resume an experiment. '
                                   'Reloaded the optimizer parameter and '
                                   'set load_model to model_last.pth '
-                                  'in the exp dir if load_model is empty.') 
+                                  'in the exp dir if load_model is empty.')
+    # save demo video
+    self.parser.add_argument('--save_video', action='store_true')
+    self.parser.add_argument('--video_name', type=str, default='',
+                             help="demo video's name in demo_output folder")
 
     # system
     self.parser.add_argument('--gpus', default='0', 
@@ -127,6 +131,7 @@ class opts(object):
                              help='keep the original resolution'
                                   ' during validation.')
 
+
     # dataset
     self.parser.add_argument('--data_dir', type=str, default='etri-safety_system',
                               help='Dataset folder name')
@@ -178,7 +183,7 @@ class opts(object):
     # task
     # ctdet
     self.parser.add_argument('--norm_wh', action='store_true',
-                             help='L1(\hat(y) / y, 1) or L1(\hat(y), y)')
+                             help='L1(\hat(y) / y, 1) or L1(\hat(y), y)') # --> | (y'/ y) - 1 | or | y' - y |
     self.parser.add_argument('--dense_wh', action='store_true',
                              help='apply weighted regression near center or '
                                   'just apply regression on center point.')
@@ -269,7 +274,6 @@ class opts(object):
     # print('training chunk_sizes:', opt.chunk_sizes) batch size?
 
     opt.root_dir = os.path.join(os.path.dirname(__file__), '..', '..')
-    print('opts.py -- opt.root_dir: ', opt.root_dir)
     opt.data_dir = os.path.join(opt.root_dir, '..','DL-DATASET', opt.data_dir)
     opt.exp_dir = os.path.join(opt.root_dir, 'exp', opt.task)
     opt.save_dir = os.path.join(opt.exp_dir, opt.exp_id)
@@ -312,7 +316,7 @@ class opts(object):
   def init(self, args=''):
     default_dataset_info = {
       'ctdet': {'default_resolution': [480,640], 'num_classes': 5,
-                'mean': [ 0.3379,  0.3361,  0.3373], 'std': [ 0.2641,  0.2616,  0.27 ],#'mean': [0.18199874, 0.1793125,  0.18213241], 'std': [0.2463923,  0.24445952, 0.25209397],
+                'mean': [0.3379,  0.3361,  0.3373], 'std': [0.2641,  0.2616,  0.27 ],
                 'dataset': 'etri'}
     }
     class Struct:
