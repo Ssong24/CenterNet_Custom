@@ -1,0 +1,1 @@
+<annotations><filename>GH040065_1009.jpg</filename><folder>images</folder><size><width>640</width><height>480</height><depth>3</depth></size><object><name>Car_1</name><pose>Unspecified</pose><truncated>0</truncated><difficult>0</difficult><bndbox><xmin>16.50016</xmin><ymin>44.66688000000001</ymin><xmax>87.49984</xmax><ymax>144.0</ymax></bndbox></object></annotations>

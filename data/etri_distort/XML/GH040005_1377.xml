@@ -1,0 +1,1 @@
+<annotations><filename>GH040005_1377.jpg</filename><folder>images</folder><size><width>640</width><height>480</height><depth>3</depth></size><object><name>Head</name><pose>Unspecified</pose><truncated>0</truncated><difficult>0</difficult><bndbox><xmin>494.50016000000005</xmin><ymin>100.00031999999999</ymin><xmax>515.0</xmax><ymax>133.33344</ymax></bndbox></object></annotations>
