@@ -32,7 +32,6 @@ def conv3x3(in_planes, out_planes, stride=1):
 
 class BasicBlock(nn.Module):
     expansion = 1
-
     def __init__(self, inplanes, planes, stride=1, downsample=None):
         super(BasicBlock, self).__init__()
         self.conv1 = conv3x3(inplanes, planes, stride)
@@ -81,8 +80,8 @@ def fill_fc_weights(layers):
             if m.bias is not None:
                 nn.init.constant_(m.bias, 0)
 
-class PoseResNet(nn.Module):
 
+class PoseResNet(nn.Module):
     def __init__(self, block, layers, heads, head_conv):
         self.inplanes = 64
         self.heads = heads
