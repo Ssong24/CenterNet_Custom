@@ -4,12 +4,12 @@ from __future__ import print_function
 
 from .sample.ctdet import CTDetDataset
 
-from .dataset.etri import Etri
-from .dataset.etri_distortion import EtriDistortion
+from .dataset.etri_undistort import EtriUndistort
+from .dataset.etri_distort import EtriDistort
 
 dataset_factory = {
-  'etri': Etri,
-  'etri_distort': EtriDistortion
+  'etri_undistort': EtriUndistort,
+  'etri_distort': EtriDistort
 }
 
 _sample_factory = {
