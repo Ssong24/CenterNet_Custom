@@ -1,13 +1,8 @@
 ## Introduction
-This repository is based on 'Objects as Points' github https://github.com/xingyizhou/CenterNet. 
+This repository is based on 'Objects as Points' github https://github.com/xingyizhou/CenterNet.
 I modified the code for custom dataset. 
+For more information about CenterNet, please refer to the original repository.
 
-
-## Third-party resources
-
-- Keras Implementation: [keras-centernet](https://github.com/see--/keras-centernet) from [see--](https://github.com/see--).
-- CenterNet + DeepSORT tracking implementation: [centerNet-deep-sort](https://github.com/kimyoon-young/centerNet-deep-sort) from [kimyoon-young](https://github.com/kimyoon-young).
-- Blogs on training CenterNet on custom datasets (in Chinese): [ships](https://blog.csdn.net/weixin_42634342/article/details/97756458) from [Rhett Chen](https://blog.csdn.net/weixin_42634342) and [faces](https://blog.csdn.net/weixin_41765699/article/details/100118353) from [linbior](https://me.csdn.net/weixin_41765699).
 
 ## License
 
